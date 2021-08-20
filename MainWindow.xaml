@@ -1,0 +1,41 @@
+﻿<Window x:Class="ImageViewerFolder.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ImageViewerFolder"
+        mc:Ignorable="d"
+        Title="iCloud Live Photos Remover" Height="470" Width="800"
+        ResizeMode="CanMinimize">
+    <Grid Margin="10">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0">
+            <!--Folder browse button-->
+            <StackPanel Margin="5,5,5,5" Orientation="Horizontal" Height="40" Background="White">
+                <Label  Height="auto" Content="Choose folder:" VerticalAlignment="Center"/>
+                <Label  x:Name="FolderDir" Height="auto"  VerticalAlignment="Center"/>
+                <Button x:Name="BrowseButton" Height="25" Width="50" Content="Browse"  Click="BrowseButton_Click"/>
+                <Button x:Name="RemoveButton" Height="25" Width="50" Content="Remove"  Click="RemoveButton_Click" Margin="5,0,0,0" Visibility="Hidden"/>
+            </StackPanel>
+
+            <!--Folder items list-->
+
+            <ListBox Margin="5,5,5,5" Height="330" x:Name="DirBox" SelectionChanged="DirBox_SelectionChanged"/>
+
+            <StackPanel Orientation="Horizontal" Margin="5,0,0,0">
+                <Label Content="Search in: "/>
+                <RadioButton Content="Root folder only" VerticalAlignment="Center" Margin="5,5,5,5" IsChecked="True" x:Name="RootOnly" Click="RootOnly_Click"/>
+                <RadioButton Content="Root and subfolders" VerticalAlignment="Center" Margin="5,5,5,5" x:Name="RootSub" Click="RootSub_Click"/>
+            </StackPanel>
+
+        </StackPanel>
+
+        <Image Grid.Column="1" Margin="5,5,5,5" x:Name="ImgBox"/>
+
+    </Grid>
+</Window>
