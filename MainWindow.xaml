@@ -18,9 +18,9 @@
             <!--Folder browse button-->
             <StackPanel Margin="5,5,5,5" Orientation="Horizontal" Height="40" Background="White">
                 <Label  Height="auto" Content="Choose folder:" VerticalAlignment="Center"/>
-                <Label  x:Name="FolderDir" Height="auto"  VerticalAlignment="Center"/>
+                <Label  x:Name="FolderDir" Height="auto" MaxWidth="180" VerticalAlignment="Center"/>    <!--fixed overflowing text box also: do this properly-->
                 <Button x:Name="BrowseButton" Height="25" Width="50" Content="Browse"  Click="BrowseButton_Click"/>
-                <Button x:Name="RemoveButton" Height="25" Width="50" Content="Remove"  Click="RemoveButton_Click" Margin="5,0,0,0" Visibility="Hidden"/>
+                <Button x:Name="RemoveButton" Height="25" Width="50" Content="Remove"  Click="RemoveButton_Click" Margin="5,0,0,0" Visibility="Visible"/>
             </StackPanel>
 
             <!--Folder items list-->

@@ -14,8 +14,9 @@ namespace ImageViewerFolder
     /// </summary>
     public partial class MainWindow : Window
     {
-        private string folderPath;
-        private bool searchSubs;
+        private string sFolderPath;
+        private bool bSearchSubs;
+        private bool bFolderInit;
 
         private static readonly string ImageExtension = ".JPG";
         private static readonly string MovieExtension = ".MOV";
@@ -25,8 +26,9 @@ namespace ImageViewerFolder
         public MainWindow()
         {
             InitializeComponent();
-            searchSubs = false;
-            folderPath = "TEMP_PLACEHOLDER_NULL";
+            bSearchSubs = false;
+            bFolderInit = false;
+
         }
 
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
@@ -37,8 +39,9 @@ namespace ImageViewerFolder
 
             if (result.HasValue && result.Value)
             {
-                folderPath = folderDialog.SelectedPath;
-                FolderDir.Content = folderPath;
+                sFolderPath = folderDialog.SelectedPath;
+                FolderDir.Content = sFolderPath;
+                bFolderInit = true;
                 UpdateList();
             }
 
@@ -46,8 +49,8 @@ namespace ImageViewerFolder
 
         private void RootOnly_Click(object sender, RoutedEventArgs e)
         {
-            searchSubs = false;
-            if (folderPath != "TEMP_PLACEHOLDER_NULL")
+            bSearchSubs = false;
+            if (bFolderInit)
             {
                 UpdateList();
             }
@@ -55,8 +58,8 @@ namespace ImageViewerFolder
 
         private void RootSub_Click(object sender, RoutedEventArgs e)
         {
-            searchSubs = true;
-            if (folderPath != "TEMP_PLACEHOLDER_NULL")
+            bSearchSubs = true;
+            if (bFolderInit)
             {
                 UpdateList();
             }
@@ -66,12 +69,23 @@ namespace ImageViewerFolder
         {
             int count = 0;
 
-            foreach (string f in intersection)
+            foreach (string f in intersection)  //todo: use delegates
             {
-                System.IO.File.Delete(f + MovieExtension);
-                count++;
-                UpdateList();
+                try
+                {
+                    System.IO.File.Delete(f + MovieExtension);
+                    count++;
+                }
+                catch (Exception ex)
+                {
+                    count--;
+                    string err = "Program has encountered an error while deleting file: " + f + MovieExtension + "\n" + ex.Message.ToString();
+                    _ = MessageBox.Show(err);
+                }
             }
+
+
+            UpdateList();
 
             string info = "Removed: " + count.ToString() + " movies.";
             _ = MessageBox.Show(info);
@@ -80,6 +94,7 @@ namespace ImageViewerFolder
         private void DirBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ImgBox.Source = null;
+
             if (DirBox.Items.Count > 0)
             {
                 string imgPath = e.AddedItems[0].ToString();
@@ -97,38 +112,38 @@ namespace ImageViewerFolder
         {
             DirBox.Items.Clear();
 
-            List<string> imgList = new List<string>();
-            List<string> movList = new List<string>();
+            List<string> vImgNames = new List<string>();
+            List<string> vMovNames = new List<string>();
 
-            List<string> files = new List<string>();
+            List<string> vAllNames = new List<string>();
 
             try
             {
 
-                if (!searchSubs)
+                if (!bSearchSubs)
                 {
-                    files = Directory.GetFiles(folderPath).ToList();
+                    vAllNames = Directory.GetFiles(sFolderPath).ToList();
                 }
 
-                if (searchSubs)
+                if (bSearchSubs)
                 {
-                    files = Directory.GetFiles(folderPath, "*", SearchOption.AllDirectories).ToList();
+                    vAllNames = Directory.GetFiles(sFolderPath, "*", SearchOption.AllDirectories).ToList();
                 }
 
-                foreach (string f in files.ToList())
+                foreach (string f in vAllNames.ToList())
                 {
 
                     if (ImageExtension.Contains(System.IO.Path.GetExtension(f).ToUpperInvariant()))
                     {
-                        imgList.Add(f.Split('.')[0]);
+                        vImgNames.Add(f.Split('.')[0]);
                     }
                     else if (MovieExtension.Contains(System.IO.Path.GetExtension(f).ToUpperInvariant()))
                     {
-                        movList.Add(f.Split('.')[0]);
+                        vMovNames.Add(f.Split('.')[0]);
                     }
                 }
 
-                intersection = imgList.Select(i => i.ToString()).Intersect(movList).ToList();
+                intersection = vImgNames.Select(i => i.ToString()).Intersect(vMovNames).ToList();
 
 
                 foreach (var f in intersection)
@@ -143,9 +158,10 @@ namespace ImageViewerFolder
 
 
             }
-            catch (UnauthorizedAccessException)
+            catch (Exception ex)
             {
-                _ = MessageBox.Show($"UnauthorizedAccessException");
+                string err = $"An error has occured: \n{ex.Message}";
+                _ = MessageBox.Show(err);
             }
 
         }
